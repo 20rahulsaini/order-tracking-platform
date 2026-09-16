@@ -19,12 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * Web-layer test for {@link OrderRestImpl}.
- *
- * <p>Slices only the web layer: {@link OrderService} is mocked so no DB or
- * Kafka infrastructure is needed.
- */
+
 @WebMvcTest(OrderRestImpl.class)
 class OrderRestImplTest {
 

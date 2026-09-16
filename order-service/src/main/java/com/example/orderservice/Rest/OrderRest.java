@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @Tag(name = "Orders", description = "Create and fetch customer orders")
 @RequestMapping("/api/orders")
@@ -32,4 +33,13 @@ public interface OrderRest {
             @Parameter(description = "Business identifier", required = true, example = "ORD-ABCD1234")
             @PathVariable String orderId
     );
+
+
+    @Operation(
+            summary = "Get all order",
+            description = "Returns all the orders for the supplied business identifier."
+    )
+    @CommonApiResponses
+    @GetMapping("/getAllOrder")
+    ResponseEntity<List<OrderResponse>> getAllOrder();
 }

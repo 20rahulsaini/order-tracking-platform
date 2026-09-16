@@ -10,13 +10,7 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-/**
- * Order entity persisted to MySQL.
- *
- * Note: The {@code status} field on this table is the order-creation-side
- * snapshot (always starts at PLACED). The Tracking Service maintains the
- * authoritative status timeline in {@code order_status_history}.
- */
+
 @Entity
 @Table(name = "orders")
 public class Order {

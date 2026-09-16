@@ -9,6 +9,8 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class OrderDaoImpl implements OrderDao {
@@ -26,7 +28,7 @@ public class OrderDaoImpl implements OrderDao {
 
     @Override
     @Transactional(readOnly = true)
-    public DaoResult<Order> findByOrderId(String orderId) {
+    public Order findByOrderId(String orderId) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Order> query = cb.createQuery(Order.class);
         Root<Order> root = query.from(Order.class);
@@ -35,9 +37,21 @@ public class OrderDaoImpl implements OrderDao {
                 .where(cb.equal(root.get("orderId"), orderId));
 
         TypedQuery<Order> typedQuery = entityManager.createQuery(query);
-        return typedQuery.getResultStream()
-                .findFirst()
-                .map(DaoResult::found)
-                .orElseGet(() -> DaoResult.notFound("Order does not exist: " + orderId));
+
+          return typedQuery.getResultStream()
+            .findFirst()
+            .orElse(null);
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Order> findAllOrders() {
+    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Order> query = cb.createQuery(Order.class);
+    Root<Order> root = query.from(Order.class);
+    query.select(root);
+        TypedQuery<Order> typedQuery = entityManager.createQuery(query);
+        return typedQuery.getResultList();
     }
 }

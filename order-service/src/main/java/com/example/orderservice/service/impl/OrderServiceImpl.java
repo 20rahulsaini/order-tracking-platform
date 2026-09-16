@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.List;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -75,15 +75,28 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     public OrderResponse getOrder(String orderId) {
         log.info("Fetching order orderId={}", orderId);
-        DaoResult<Order> daoResult = orderDao.findByOrderId(orderId);
+        Order order = orderDao.findByOrderId(orderId);
 
-        if (!daoResult.isFound()) {
-            log.warn("Order not found orderId={}", orderId);
-            throw new OrderNotFoundException(orderId);
+        if (order == null) {
+        log.warn("Order not found orderId={}", orderId);
+        throw new OrderNotFoundException(orderId);
         }
 
-        return toResponse(daoResult.getData());
+        return toResponse(order);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderResponse> getAllOrder() {
+    log.info("inside getAllOrder");
+    List<Order> orders = orderDao.findAllOrders();
+    log.info("Fetching all orders:{}", orders);
+
+    return orders.stream()
+            .map(this::toResponse)
+            .toList();
+    }
+
 
     private OrderResponse toResponse(Order order) {
         OrderResponse response = new OrderResponse();

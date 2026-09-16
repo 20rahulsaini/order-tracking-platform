@@ -62,7 +62,7 @@ class OrderServiceImplTest {
         order.setTotalAmount(new BigDecimal("1.99"));
         order.setStatus("PLACED");
 
-        when(orderDao.findByOrderId("ORD-EXISTING")).thenReturn(DaoResult.found(order));
+        when(orderDao.findByOrderId("ORD-EXISTING")).thenReturn(order);
 
         assertThat(orderService.getOrder("ORD-EXISTING").getOrderId())
                 .isEqualTo("ORD-EXISTING");
@@ -71,7 +71,7 @@ class OrderServiceImplTest {
     @Test
     void getOrder_throwsWhenNotFound() {
         when(orderDao.findByOrderId("ORD-MISSING"))
-                .thenReturn(DaoResult.notFound("missing"));
+                .thenReturn(null);
 
         assertThatThrownBy(() -> orderService.getOrder("ORD-MISSING"))
                 .isInstanceOf(OrderService.OrderNotFoundException.class);

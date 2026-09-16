@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 @RestController
 public class OrderRestImpl implements OrderRest {
@@ -33,6 +34,12 @@ public class OrderRestImpl implements OrderRest {
     public ResponseEntity<OrderResponse> getOrder(String orderId) {
         log.info("GET /api/orders/{}", orderId);
         return ResponseEntity.ok(orderService.getOrder(orderId));
+    }
+
+    @Override
+    public ResponseEntity<List<OrderResponse>> getAllOrder() {
+        log.info("GET /api/orders/getAllOrders");
+        return ResponseEntity.ok(orderService.getAllOrder());
     }
 
     @ExceptionHandler(OrderService.OrderNotFoundException.class)
