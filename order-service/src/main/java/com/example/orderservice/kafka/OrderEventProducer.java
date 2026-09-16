@@ -10,18 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CompletableFuture;
 
-/**
- * Kafka producer for the {@code order-events} topic.
- *
- * Design choices:
- *   - The Kafka record key is {@code orderId}, so all events for a given
- *     order are routed to the same partition (preserves per-order ordering).
- *   - Sending is synchronous via {@code .join()} in the caller for the
- *     "create order" path, because losing the very first PLACED event
- *     would leave the tracking timeline empty.
- *   - Failures bubble up as a {@link RuntimeException} so the REST call
- *     fails fast instead of silently dropping the event.
- */
+
 @Component
 public class OrderEventProducer {
 
@@ -61,7 +50,6 @@ public class OrderEventProducer {
             }
         });
 
-        // Block on the create path so the REST layer can fail-fast on broker errors.
         future.join();
         log.info("Kafka send completed (synchronous) eventId={} orderId={}",
                 event.getEventId(), event.getOrderId());
@@ -72,7 +60,7 @@ public class OrderEventProducer {
         return topicName;
     }
 
-    // Kafka's SendResult wraps this; exposed here only for logging in tests.
+    
     public static final class RecordMetadata {
         private final long offset;
         private final int partition;

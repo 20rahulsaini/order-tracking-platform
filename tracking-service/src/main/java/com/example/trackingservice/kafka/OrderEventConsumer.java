@@ -44,9 +44,6 @@ public class OrderEventConsumer {
         } catch (com.example.trackingservice.service.InvalidStatusTransitionException e) {
             log.error("Invalid status transition for order {}: {} -> {}. Will route to DLQ.",
                     e.getOrderId(), e.getCurrent(), e.getTarget());
-            // Re-throw so the DefaultErrorHandler routes the record to the DLT.
-            // InvalidStatusTransitionException is in the notRetryable list, so it
-            // goes straight to the DLT without retrying.
             throw e;
         } catch (Exception e) {
             log.error("Unexpected error while processing event eventId={} orderId={}. Will retry or DLQ.",

@@ -1,5 +1,0 @@
-com\example\trackingservice\service\OrderStatusStateMachineTest.class
-com\example\trackingservice\redis\OrderStateCacheTest.class
-com\example\trackingservice\Rest\TrackingRestImplTest.class
-com\example\trackingservice\TrackingServiceApplicationTests.class
-com\example\trackingservice\service\TrackingServiceImplTest.class
