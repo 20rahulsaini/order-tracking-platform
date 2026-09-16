@@ -31,7 +31,6 @@ public interface TrackingService {
      * <ol>
      *   <li>Idempotency check: if {@code processed_events.event_id} already exists, skip.</li>
      *   <li>Resolve current status (Redis first, MySQL on miss).</li>
-     *   <li>Validate the transition via {@link OrderStatusStateMachine}.</li>
      *   <li>Insert a row into {@code order_status_history} (unique on event_id).</li>
      *   <li>Insert a row into {@code processed_events} (unique on event_id).</li>
      *   <li>Refresh the Redis cache.</li>
