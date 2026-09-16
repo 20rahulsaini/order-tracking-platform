@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order &amp; Tracking Platform — Developer Guide</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --panel-2: #334155;
+    --border: #475569;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --accent: #3b82f6;
+    --accent-2: #10b981;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --code-bg: #0c1322;
+    --code-border: #1e293b;
+    --pink: #ec4899;
+    --purple: #a78bfa;
+    --cyan: #22d3ee;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Layout */
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+
+  /* Sidebar / TOC */
+  .sidebar {
+    background: #0a0f1c;
+    border-right: 1px solid var(--border);
+    padding: 30px 22px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar h2 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin: 0 0 12px 0;
+  }
+  .sidebar a {
+    display: block;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13.5px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+  }
+  .sidebar a:hover {
+    color: var(--text);
+    background: rgba(59,130,246,0.1);
+    border-left: 2px solid var(--accent);
+    padding-left: 14px;
+  }
+  .sidebar a.sub {
+    padding-left: 22px;
+    font-size: 12.5px;
+  }
+
+  /* Main content */
+  main {
+    padding: 50px 60px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  @media (max-width: 700px) {
+    main { padding: 30px 22px; }
+  }
+
+  /* Typography */
+  h1 {
+    font-size: 36px;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.02em;
+    background: linear-gradient(90deg, var(--cyan), var(--accent), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 16px;
+    margin-bottom: 30px;
+  }
+  h2 {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 50px 0 18px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    letter-spacing: -0.01em;
+  }
+  h2 .num {
+    color: var(--accent);
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 20px;
+    margin-right: 10px;
+  }
+  h3 {
+    font-size: 19px;
+    font-weight: 600;
+    margin: 30px 0 12px 0;
+    color: var(--cyan);
+  }
+  h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 22px 0 8px 0;
+    color: var(--accent-2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  p { margin: 0 0 14px 0; }
+  ul, ol { margin: 0 0 14px 0; padding-left: 24px; }
+  li { margin-bottom: 6px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Code blocks */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 8px;
+    padding: 18px 22px;
+    overflow-x: auto;
+    margin: 14px 0;
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #cbd5e1;
+  }
+  pre.ascii {
+    background: #0a0f1c;
+    color: var(--cyan);
+    font-size: 12px;
+    line-height: 1.35;
+    white-space: pre;
+  }
+  code {
+    font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    background: rgba(59,130,246,0.12);
+    color: #93c5fd;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  th, td {
+    padding: 11px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    vertical-align: top;
+  }
+  th {
+    background: var(--panel-2);
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(59,130,246,0.05); }
+
+  /* Cards / panels */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px;
+    margin: 16px 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  }
+  .card.green { border-left: 4px solid var(--accent-2); }
+  .card.blue  { border-left: 4px solid var(--accent); }
+  .card.amber { border-left: 4px solid var(--warn); }
+  .card.pink  { border-left: 4px solid var(--pink); }
+  .card.purple{ border-left: 4px solid var(--purple); }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .badge.get    { background: rgba(34,211,238,0.18); color: #67e8f9; }
+  .badge.post   { background: rgba(52,211,153,0.18); color: #6ee7b7; }
+  .badge.put    { background: rgba(251,191,36,0.18); color: #fcd34d; }
+  .badge.delete { background: rgba(239,68,68,0.18); color: #fca5a5; }
+  .badge.green  { background: rgba(16,185,129,0.18); color: #6ee7b7; }
+  .badge.blue   { background: rgba(59,130,246,0.18); color: #93c5fd; }
+  .badge.amber  { background: rgba(245,158,11,0.18); color: #fcd34d; }
+  .badge.pink   { background: rgba(236,72,153,0.18); color: #f9a8d4; }
+  .badge.purple { background: rgba(167,139,250,0.18); color: #c4b5fd; }
+
+  /* Step blocks for the Alice walkthrough */
+  .step {
+    display: flex;
+    gap: 16px;
+    margin: 18px 0;
+    padding: 18px;
+    background: rgba(59,130,246,0.06);
+    border: 1px solid rgba(59,130,246,0.25);
+    border-radius: 10px;
+  }
+  .step .num {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .step .body { flex: 1; }
+  .step .body h4 { margin-top: 0; }
+
+  /* Inline color chips */
+  .chip {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  /* Highlight callouts */
+  .callout {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 16px 0;
+    border-left: 4px solid var(--accent);
+    background: rgba(59,130,246,0.08);
+    font-size: 14px;
+  }
+  .callout.warn {
+    border-left-color: var(--warn);
+    background: rgba(245,158,11,0.08);
+  }
+  .callout.danger {
+    border-left-color: var(--danger);
+    background: rgba(239,68,68,0.08);
+  }
+  .callout.success {
+    border-left-color: var(--accent-2);
+    background: rgba(16,185,129,0.08);
+  }
+
+  /* Print friendly */
+  @media print {
+    body { background: white; color: black; }
+    .sidebar { display: none; }
+    .layout { display: block; }
+    main { padding: 0; max-width: 100%; }
+    pre, table, .card { page-break-inside: avoid; }
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 60px;
+    padding: 24px 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ============== SIDEBAR / TOC ============== -->
+  <aside class="sidebar">
+    <h2>On this page</h2>
+    <a href="#overview">1. Product Overview</a>
+    <a href="#architecture">2. Architecture</a>
+    <a href="#services">3. Service Responsibilities</a>
+    <a href="#kafka">4. Kafka Flow</a>
+    <a href="#db">5. Database Schema</a>
+    <a href="#redis">6. Redis Usage</a>
+    <a href="#idempotency">7. Idempotency</a>
+    <a href="#dlq">8. Dead Letter Topic</a>
+    <a href="#apis">9. API Reference</a>
+    <a href="#swagger">10. Swagger UI</a>
+    <a href="#structure">11. Project Structure</a>
+    <a href="#flow">12. End-to-End Walkthrough</a>
+    <a href="#concepts">13. Key Concepts</a>
+    <a href="#run">14. How to Run</a>
+    <a href="#manual">15. Manual Testing</a>
+    <a href="#testing">16. Test Suite</a>
+  </aside>
+
+  <!-- ============== MAIN ============== -->
+  <main>
+
+    <h1>Real-Time Order &amp; Tracking Platform</h1>
+    <p class="subtitle">
+      A small, production-style order-tracking system built with
+      <strong>Java 17, Spring Boot 3, Apache Kafka, Redis, MySQL, React, and Docker Compose</strong>.
+      This guide is written for a developer joining the project for the first time.
+    </p>
+
+    <div class="callout">
+      <strong>TL;DR:</strong> A user creates an order via the React UI. The Order Service
+      saves it to MySQL and publishes an event to Kafka. The Tracking Service consumes
+      that event, validates the state-machine transition, persists it to its own MySQL,
+      and caches it in Redis. The React UI then polls the Tracking Service to render
+      a live status timeline. The Delivery Service simulates the courier by publishing
+      more lifecycle events.
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="overview"><span class="num">01</span>Product Overview</h2>
+
+    <p>This is essentially a mini Flipkart / Amazon order system. When an order is
+    created, it gets tracked across its lifecycle:</p>
+
+    <pre class="ascii">
+PLACED → CONFIRMED → PACKED → SHIPPED → OUT_FOR_DELIVERY → DELIVERED
+</pre>
+
+    <p>Each transition is published as a Kafka event, validated by the Tracking Service,
+    persisted as an append-only history row, and reflected in a live timeline in the
+    React dashboard.</p>
+
+    <h3>What this project is <em>not</em></h3>
+    <ul>
+      <li><strong>Not enterprise-bloated.</strong> No Kubernetes, no service discovery,
+          no OAuth, no Elasticsearch, no Spring Cloud.</li>
+      <li><strong>Not a toy.</strong> Real Kafka flow, real idempotency, real DLQ,
+          real Redis cache-aside, real schema migrations, real tests.</li>
+      <li><strong>Not exactly-once.</strong> We claim <em>idempotent side effects</em>
+          via a <code>processed_events</code> ledger — the actually-useful property
+          for this workload.</li>
+    </ul>
+
+    <!-- ============================================================ -->
+    <h2 id="architecture"><span class="num">02</span>Architecture</h2>
+
+    <pre class="ascii">
+                  +---------------------+
+                  |    React UI         |   (port 8080)
+                  |  Vite + nginx       |
+                  +----------+----------+
+                             |
+                     /api/orders, /api/tracking, /api/delivery
+                             |
+        +--------------------+--------------------+--------------------+
+        |                    |                    |
+        v                    v                    v
++---------------+    +-----------------+   +------------------+
+| Order Service |    | Tracking Service|   | Delivery Service |
+| :8081         |    | :8082           |   | :8083            |
+| MySQL         |    | MySQL + Redis   |   | (no DB)          |
++-------+-------+    +--------+--------+   +--------+---------+
+        |                      ^                     |
+        | produces              | consumes           | produces
+        | order-events          | order-events       | order-events
+        v                      |                     v
+       +--------------------------------------+
+       |     Apache Kafka (KRaft, :9092)      |
+       |     topic: order-events             |
+       |     topic: order-events.DLT         |
+       +--------------------------------------+
+                |
+                v
++----------------+   +----------------+
+|   MySQL        |   |     Redis      |
+| (source of     |   | (cache - fast) |
+|  truth)        |   |                |
++----------------+   +----------------+
+</pre>
+
+    <h3>Components</h3>
+
+    <table>
+      <tr><th>Service</th><th>Port</th><th>Stack</th></tr>
+      <tr><td>Order Service</td><td>8081</td><td>Spring Boot 3, JPA/Hibernate, MySQL, Kafka producer, OpenAPI 3 / Swagger UI</td></tr>
+      <tr><td>Tracking Service</td><td>8082</td><td>Spring Boot 3, JPA/Hibernate, MySQL, Redis, Kafka consumer + DLQ producer, OpenAPI 3 / Swagger UI</td></tr>
+      <tr><td>Delivery Service</td><td>8083</td><td>Spring Boot 3, Kafka producer (no DB, simulation only), OpenAPI 3 / Swagger UI</td></tr>
+      <tr><td>Frontend</td><td>8080</td><td>React 18 + Vite, nginx reverse proxy</td></tr>
+      <tr><td>MySQL</td><td>3306</td><td>MySQL 8.0, two databases: <code>order_db</code>, <code>tracking_db</code></td></tr>
+      <tr><td>Redis</td><td>6379</td><td>Redis 7, cache for tracking snapshots</td></tr>
+      <tr><td>Kafka</td><td>9092</td><td>Apache Kafka 3.7 in KRaft mode (no Zookeeper)</td></tr>
+    </table>
+
+    <h3>Why three services instead of one?</h3>
+    <p>Each service has a single, well-bounded responsibility. This keeps the
+    code easy to reason about and easy to interview-defend:</p>
+
+    <ul>
+      <li><strong>Order Service</strong> owns order creation and the canonical
+          <code>orders</code> table. It does <em>not</em> know whether the order is
+          currently SHIPPED or DELIVERED — that's the Tracking Service's problem.</li>
+      <li><strong>Tracking Service</strong> owns the order lifecycle. It is the
+          single writer to <code>order_status_history</code> and
+          <code>processed_events</code>. Because nothing else writes to those tables,
+          the state-machine invariants are easy to enforce.</li>
+      <li><strong>Delivery Service</strong> is the placeholder for an external
+          courier / warehouse webhook. It produces Kafka events but stores nothing
+          locally. This demonstrates that <em>any</em> service can emit lifecycle
+          events without coupling to the Tracking Service.</li>
+    </ul>
+
+    <!-- ============================================================ -->
+    <h2 id="services"><span class="num">03</span>Service Responsibilities</h2>
+
+    <div class="card blue">
+      <h3>Order Service <span class="chip">:8081</span></h3>
+      <table>
+        <tr><th>Responsibility</th><th>Implementation</th></tr>
+        <tr><td>Create order</td><td><code>POST /api/orders</code> → persists to <code>orders</code>, then publishes <code>ORDER_PLACED</code> event to Kafka</td></tr>
+        <tr><td>Get order</td><td><code>GET /api/orders/{orderId}</code> → reads from MySQL</td></tr>
+        <tr><td>Publish lifecycle events to Kafka</td><td><code>OrderEventProducer#publish</code> (synchronous send on the create path so the REST call fails fast on broker errors)</td></tr>
+        <tr><td>Store orders in MySQL</td><td>JPA entity <code>Order</code> in database <code>order_db</code></td></tr>
+      </table>
+    </div>
+
+    <div class="card green">
+      <h3>Tracking Service <span class="chip">:8082</span></h3>
+      <table>
+        <tr><th>Responsibility</th><th>Implementation</th></tr>
+        <tr><td>Consume Kafka order events</td><td><code>OrderEventConsumer</code> (<code>@KafkaListener</code> on <code>order-events</code>)</td></tr>
+        <tr><td>Validate status transitions</td><td><code>OrderStatusStateMachine</code> (pure, fully unit-tested)</td></tr>
+        <tr><td>Maintain status/history in MySQL</td><td><code>OrderStatusHistory</code> JPA entity (append-only)</td></tr>
+        <tr><td>Idempotent event processing</td><td><code>ProcessedEvent</code> table + unique constraint on <code>event_id</code></td></tr>
+        <tr><td>Retry + Dead Letter Topic</td><td><code>DefaultErrorHandler</code> + <code>DeadLetterPublishingRecoverer</code> (3 retries, 1s backoff, then DLT)</td></tr>
+        <tr><td>Cache current order state in Redis</td><td><code>OrderStateCache</code> (cache-aside pattern, TTL 1h)</td></tr>
+        <tr><td>GET endpoint</td><td><code>GET /api/tracking/orders/{orderId}</code> returns current status + full timeline</td></tr>
+      </table>
+    </div>
+
+    <div class="card amber">
+      <h3>Delivery Service <span class="chip">:8083</span></h3>
+      <p>A tiny simulation-only service. It has <strong>no database</strong> on purpose —
+      its only job is to demonstrate that events from an independent producer flow
+      through the same Kafka pipeline and land in the Tracking Service's history.</p>
+      <table>
+        <tr><th>Responsibility</th><th>Implementation</th></tr>
+        <tr><td>Simulate SHIPPED</td><td><code>POST /api/delivery/{orderId}/ship</code> → publishes <code>ORDER_SHIPPED</code> event</td></tr>
+        <tr><td>Simulate OUT_FOR_DELIVERY</td><td><code>POST /api/delivery/{orderId}/out-for-delivery</code></td></tr>
+        <tr><td>Simulate DELIVERED</td><td><code>POST /api/delivery/{orderId}/deliver</code></td></tr>
+      </table>
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="kafka"><span class="num">04</span>Kafka Flow</h2>
+
+    <h3>Topic layout</h3>
+    <table>
+      <tr><th>Topic</th><th>Key</th><th>Value</th><th>Notes</th></tr>
+      <tr><td><code>order-events</code></td><td><code>orderId</code></td><td>JSON <code>OrderEvent</code></td><td>main lifecycle stream</td></tr>
+      <tr><td><code>order-events.DLT</code></td><td><code>orderId</code></td><td>JSON <code>OrderEvent</code></td><td>dead letter topic, auto-created on first failed record</td></tr>
+    </table>
+
+    <h3>Event payload</h3>
+    <pre><code>{
+  "eventId":   "EVT-9b3f1c2a-...",
+  "orderId":   "ORD-ABCD1234",
+  "eventType": "ORDER_SHIPPED",
+  "status":    "SHIPPED",
+  "timestamp": "2024-09-15T10:23:45.123Z"
+}</code></pre>
+
+    <h3>Why <code>orderId</code> as the message key?</h3>
+    <p>Using <code>orderId</code> as the Kafka record key guarantees that <strong>every
+    event for a given order lands on the same partition</strong>. Because Kafka
+    preserves order within a single partition, the Tracking Service observes events
+    for any given order in the exact order the producers emitted them. Without this,
+    two events in flight could be consumed out of order, and the state machine would
+    reject perfectly valid transitions.</p>
+
+    <h3>Producer configuration (Order Service &amp; Delivery Service)</h3>
+    <table>
+      <tr><th>Property</th><th>Value</th><th>Why</th></tr>
+      <tr><td><code>acks</code></td><td><code>all</code></td><td>Wait for all in-sync replicas; safe default for a single-broker setup</td></tr>
+      <tr><td><code>enable.idempotence</code></td><td><code>true</code></td><td>Producer-level sequence numbers protect against "send, retry, duplicate" on the wire</td></tr>
+      <tr><td><code>retries</code></td><td><code>3</code></td><td>Retry transient broker errors</td></tr>
+      <tr><td><code>key.serializer</code></td><td><code>StringSerializer</code></td><td>orderId is a string</td></tr>
+      <tr><td><code>value.serializer</code></td><td><code>JsonSerializer</code></td><td>POJO → JSON without manual ObjectMapper calls</td></tr>
+    </table>
+
+    <div class="callout warn">
+      <strong>Important:</strong> producer-level idempotence does <em>not</em> make the
+      Tracking Service's business logic idempotent — that's the job of the
+      <code>processed_events</code> table (see §7).
+    </div>
+
+    <h3>Consumer configuration (Tracking Service)</h3>
+    <table>
+      <tr><th>Property</th><th>Value</th><th>Why</th></tr>
+      <tr><td><code>group.id</code></td><td><code>tracking-service-group</code></td><td>Persistent consumer group; survives consumer restarts</td></tr>
+      <tr><td><code>enable.auto.commit</code></td><td><code>false</code></td><td>Manual commit-after-processing via <code>AckMode.RECORD</code></td></tr>
+      <tr><td><code>auto.offset.reset</code></td><td><code>earliest</code></td><td>Re-process backlog if offsets are missing</td></tr>
+      <tr><td><code>value.deserializer</code></td><td><code>ErrorHandlingDeserializer</code> wrapping <code>JsonDeserializer</code></td><td>A malformed payload lands in DLQ instead of crashing the listener loop</td></tr>
+    </table>
+
+    <h3>Retry &amp; DLQ error handler</h3>
+    <pre><code>DefaultErrorHandler errorHandler = new DefaultErrorHandler(
+    new DeadLetterPublishingRecoverer(dlqKafkaTemplate),
+    new FixedBackOff(1000, 2)         // 1s × 2 retries = 3 attempts total
+);
+errorHandler.addNotRetryableExceptions(
+    InvalidStatusTransitionException.class,  // will keep failing forever
+    IllegalArgumentException.class            // malformed event payload
+);</code></pre>
+
+    <p>Records that fail with a <strong>retryable</strong> exception (transient DB outage,
+    Redis timeout, etc.) are retried up to 3 times. Records that fail with a
+    <strong>non-retryable</strong> exception (invalid status transition, malformed
+    payload) are routed directly to <code>order-events.DLT</code> without retry.</p>
+
+    <!-- ============================================================ -->
+    <h2 id="db"><span class="num">05</span>Database Schema</h2>
+
+    <p>The system uses two MySQL databases inside one MySQL instance. In production
+    these would likely be separate instances (or separate schemas in a shared instance).</p>
+
+    <h3><code>order_db.orders</code> — Order Service</h3>
+    <p>The canonical record of every order created by the Order Service.</p>
+    <table>
+      <tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+      <tr><td><code>id</code></td><td><code>BIGINT AUTO_INCREMENT</code></td><td>surrogate primary key</td></tr>
+      <tr><td><code>order_id</code></td><td><code>VARCHAR(32)</code> UNIQUE</td><td>business identifier, e.g. <code>ORD-ABCD1234</code></td></tr>
+      <tr><td><code>customer_name</code></td><td><code>VARCHAR(128)</code></td><td>from the create request</td></tr>
+      <tr><td><code>product</code></td><td><code>VARCHAR(128)</code></td><td>from the create request</td></tr>
+      <tr><td><code>quantity</code></td><td><code>INT</code></td><td>from the create request</td></tr>
+      <tr><td><code>total_amount</code></td><td><code>DECIMAL(12,2)</code></td><td>from the create request</td></tr>
+      <tr><td><code>status</code></td><td><code>VARCHAR(32)</code></td><td>snapshot of order-creation-side status (starts at <code>PLACED</code>)</td></tr>
+      <tr><td><code>created_at</code></td><td><code>DATETIME(6)</code></td><td></td></tr>
+      <tr><td><code>updated_at</code></td><td><code>DATETIME(6)</code></td><td></td></tr>
+    </table>
+
+    <div class="callout">
+      The <code>status</code> column here is the Order Service's snapshot — it never
+      changes after creation in this demo. The <em>authoritative</em> current status
+      lives in the Tracking Service's <code>order_status_history</code> table.
+    </div>
+
+    <h3><code>tracking_db.order_status_history</code> — Tracking Service</h3>
+    <p>Append-only ledger of every status-change event the Tracking Service has ever
+    applied. One row per event.</p>
+    <table>
+      <tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+      <tr><td><code>id</code></td><td><code>BIGINT AUTO_INCREMENT</code></td><td>surrogate primary key</td></tr>
+      <tr><td><code>order_id</code></td><td><code>VARCHAR(32)</code></td><td>FK-like reference; no actual FK (separate DBs)</td></tr>
+      <tr><td><code>status</code></td><td><code>VARCHAR(32)</code></td><td>new status after this event</td></tr>
+      <tr><td><code>event_type</code></td><td><code>VARCHAR(64)</code></td><td>e.g. <code>ORDER_SHIPPED</code></td></tr>
+      <tr><td><code>event_id</code></td><td><code>VARCHAR(64)</code> UNIQUE</td><td>idempotency safety net (catches races)</td></tr>
+      <tr><td><code>occurred_at</code></td><td><code>DATETIME(6)</code></td><td>when the event was emitted (producer-supplied)</td></tr>
+      <tr><td><code>recorded_at</code></td><td><code>DATETIME(6)</code></td><td>when the Tracking Service wrote the row</td></tr>
+    </table>
+
+    <h3><code>tracking_db.processed_events</code> — Idempotency Ledger</h3>
+    <p>One row per event that has been successfully processed by the Tracking Service.</p>
+    <table>
+      <tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+      <tr><td><code>id</code></td><td><code>BIGINT AUTO_INCREMENT</code></td><td>surrogate primary key</td></tr>
+      <tr><td><code>event_id</code></td><td><code>VARCHAR(64)</code> UNIQUE</td><td>the unique event identifier</td></tr>
+      <tr><td><code>order_id</code></td><td><code>VARCHAR(32)</code></td><td>for diagnostic queries</td></tr>
+      <tr><td><code>status</code></td><td><code>VARCHAR(32)</code></td><td>new status after this event</td></tr>
+      <tr><td><code>processed_at</code></td><td><code>DATETIME(6)</code></td><td></td></tr>
+    </table>
+
+    <div class="callout">
+      <strong>Schema creation:</strong> The schema is created by the MySQL container on
+      first boot via <code>scripts/init-mysql.sql</code>. To re-apply the schema (e.g.
+      after a schema change), remove the <code>mysql_data</code> volume:
+      <code>docker volume rm order-tracking-platform_mysql_data</code>.
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="redis"><span class="num">06</span>Redis Usage</h2>
+
+    <p>Redis is used <strong>only</strong> as a cache (not as a source of truth, not as
+    a queue, not as a lock provider). MySQL remains the source of truth at all times.</p>
+
+    <h3>Cache key &amp; value</h3>
+    <pre><code>KEY:   order:ORD-ABCD1234
+VALUE: {
+  "orderId":       "ORD-ABCD1234",
+  "status":        "SHIPPED",
+  "lastEventType": "ORDER_SHIPPED",
+  "lastEventId":   "EVT-9b3f1c2a-...",
+  "lastUpdated":   "2024-09-15T10:23:45.123Z"
+}
+TTL:   3600 seconds (1 hour)</code></pre>
+
+    <h3>Cache-aside pattern</h3>
+    <pre class="ascii">GET /api/tracking/orders/{orderId}
+  |
+  v
+Redis GET order:ORD-... ?
+  |
+  +-- HIT  --> deserialize, return snapshot (no MySQL read for current status)
+  |
+  +-- MISS --> SELECT latest from order_status_history WHERE order_id = ?
+              +-- found  --> update Redis (write-back), return snapshot
+              +-- missing --> 404 Not Tracked</pre>
+
+    <h3>Why cache-aside (and not write-through or write-back)?</h3>
+    <ul>
+      <li><strong>Cache-aside</strong> is the simplest pattern that meets the requirement.
+          Writes happen <em>after</em> the MySQL transaction commits, so cache and DB are
+          never inconsistent in a way that loses data.</li>
+      <li>A cache miss is cheap (one MySQL read), and we refresh the cache on every
+          status change. So the cache is warm for orders that are actively being tracked,
+          and cold (and ignored) for orders that have finished.</li>
+      <li>TTL of 1h bounds the cache size — old delivered orders eventually fall out and a
+          subsequent read will repopulate from MySQL if needed.</li>
+    </ul>
+
+    <h3>Failure mode</h3>
+    <p>If Redis is down, <code>OrderStateCache</code> swallows the exception and returns
+    <code>null</code> on read or silently skips the write on write-back. The request then
+    falls through to MySQL, so the API continues to function (just slower). This is the
+    intended behavior — Redis is an optimization, not a hard dependency.</p>
+
+    <!-- ============================================================ -->
+    <h2 id="idempotency"><span class="num">07</span>Idempotency Explanation</h2>
+
+    <h3>The problem</h3>
+    <p>Kafka provides <strong>at-least-once</strong> delivery (not exactly-once) in the
+    default configuration. The Tracking Service consumer can see the same event more
+    than once in these scenarios:</p>
+    <ol>
+      <li>The consumer processes an event, commits to MySQL, but crashes <em>before</em>
+          committing the Kafka offset. On restart, it re-reads the same event.</li>
+      <li>A rebalance assigns a partition to a new consumer instance while the old
+          instance is still mid-processing. Both instances may briefly process the
+          same event.</li>
+      <li>The producer retries a send due to a transient network error. Even with
+          producer-level idempotence enabled, the consumer may receive the same logical
+          event from a different upstream path (e.g. a manual replay).</li>
+    </ol>
+
+    <h3>The solution</h3>
+    <p>Every event carries an <code>eventId</code> (a UUID generated by the producer).
+    The Tracking Service uses this <code>eventId</code> as the idempotency key:</p>
+
+    <pre><code>@Transactional
+public boolean applyEvent(OrderEvent event) {
+    // 1. Idempotency fast-path
+    if (processedEventRepo.findByEventId(event.getEventId()).isPresent()) {
+        return false;  // skip silently
+    }
+
+    // 2. Look up current status (Redis first, MySQL on miss)
+    OrderStatus currentStatus = resolveCurrentStatus(event.getOrderId());
+    OrderStatus targetStatus = parseStatus(event);
+
+    // 3. Validate the transition
+    if (currentStatus == null) {
+        if (targetStatus != OrderStatus.PLACED) {
+            throw new InvalidStatusTransitionException(...);
+        }
+    } else {
+        OrderStatusStateMachine.validateTransition(currentStatus, targetStatus);
+    }
+
+    // 4. Insert history row (unique constraint on event_id catches races)
+    try {
+        historyRepo.saveAndFlush(history);
+    } catch (DataIntegrityViolationException dup) {
+        return false;
+    }
+
+    // 5. Insert processed_events row (unique constraint on event_id)
+    try {
+        processedEventRepo.saveAndFlush(ledger);
+    } catch (DataIntegrityViolationException dup) {
+        return false;
+    }
+
+    // 6. Refresh Redis cache
+    cache.put(...);
+    return true;
+}</code></pre>
+
+    <h3>Why two unique constraints?</h3>
+    <p>The <code>processed_events.event_id</code> unique constraint is the primary
+    idempotency guarantee. But it's a <em>check-then-insert</em> pattern, which is not
+    atomic in Java — two threads can both pass the check and then race on the insert.
+    The unique constraint turns the second insert into a
+    <code>DataIntegrityViolationException</code>, which we catch and treat as a
+    successful idempotent skip.</p>
+
+    <p>The <code>order_status_history.event_id</code> unique constraint is a
+    <em>defensive</em> second layer. If somehow a row lands in history but not in
+    processed_events (e.g. an application crash between steps 4 and 5), the next attempt
+    to insert the same event into history will fail and we'll detect the duplicate. This
+    is belt-and-suspenders for the rare partial-failure case.</p>
+
+    <h3>Why not "exactly-once" Kafka?</h3>
+    <p>True exactly-once delivery in Kafka requires:</p>
+    <ul>
+      <li>Transactional producer (<code>transactional.id</code> set)</li>
+      <li><code>isolation.level=read_committed</code> on the consumer</li>
+      <li>The consumer's side effect (the MySQL write) must be <strong>atomically tied
+          to the Kafka offset commit</strong> — typically via a system that writes both
+          in the same transaction (e.g. Kafka Connect with JDBC sink, or a custom
+          outbox pattern).</li>
+    </ul>
+    <p>This is significantly more complex, fragile in operation, and most importantly
+    <strong>unnecessary for this workload</strong>. The idempotency ledger achieves the
+    actually-useful property: <strong>idempotent side effects</strong>. Whether the
+    Tracking Service sees an event once, twice, or five times, the resulting state in
+    MySQL is identical.</p>
+
+    <!-- ============================================================ -->
+    <h2 id="dlq"><span class="num">08</span>DLQ (Dead Letter Topic) Explanation</h2>
+
+    <h3>What is the DLQ?</h3>
+    <p>The Dead Letter Topic (<code>order-events.DLT</code>) is a separate Kafka topic
+    where the Tracking Service sends records that could not be processed successfully
+    after exhausting retries.</p>
+
+    <h3>When does a record go to the DLQ?</h3>
+    <p>Two paths:</p>
+    <ol>
+      <li><strong>Retryable exception exhausted.</strong> A transient failure (MySQL down,
+          Redis timeout, transient deserialization issue) is retried up to 3 times with a
+          1-second backoff. If all 3 attempts fail, the record goes to the DLQ.</li>
+      <li><strong>Non-retryable exception.</strong> Some exceptions will <em>always</em>
+          fail no matter how many times we retry. For these, the error handler skips
+          retries and routes the record directly to the DLQ. Currently classified as
+          non-retryable:
+          <ul>
+            <li><code>InvalidStatusTransitionException</code> — the event would violate
+                the state machine (e.g. SHIPPED → PLACED, or skipping steps).</li>
+            <li><code>IllegalArgumentException</code> — the event payload has an unknown
+                status string that can't be parsed into <code>OrderStatus</code>.</li>
+          </ul>
+      </li>
+    </ol>
+
+    <h3>How is the DLQ implemented?</h3>
+    <pre><code>DefaultErrorHandler errorHandler = new DefaultErrorHandler(
+    new DeadLetterPublishingRecoverer(dlqKafkaTemplate),
+    new FixedBackOff(1000L, 2L)   // 1s interval, 2 retries → 3 total attempts
+);
+errorHandler.addNotRetryableExceptions(
+    InvalidStatusTransitionException.class,
+    IllegalArgumentException.class
+);</code></pre>
+
+    <p>The <code>DeadLetterPublishingRecoverer</code> publishes the failed record to a
+    topic named <code>&lt;original-topic&gt;.DLT</code> (i.e. <code>order-events.DLT</code>),
+    preserving the original partition and key, and adding metadata headers about the
+    failure reason (<code>KAFKA_DLT_EXCEPTION_MESSAGE</code>,
+    <code>KAFKA_DLT_EXCEPTION_FQCN</code>, etc.).</p>
+
+    <h3>How do you inspect the DLQ?</h3>
+    <pre><code>docker exec -it otp-kafka \
+  /opt/bitnami/kafka/bin/kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092 \
+  --topic order-events.DLT \
+  --from-beginning \
+  --property print.headers=true</code></pre>
+
+    <!-- ============================================================ -->
+    <h2 id="apis"><span class="num">09</span>API Reference</h2>
+
+    <h3>Order Service <span class="chip">:8081</span></h3>
+
+    <h4><span class="badge post">POST</span> <code>/api/orders</code> — Create a new order</h4>
+    <p><strong>Request body</strong></p>
+    <pre><code>{
+  "customerName": "Alice",
+  "product": "Mechanical Keyboard",
+  "quantity": 2,
+  "totalAmount": 199.98
+}</code></pre>
+
+    <p><strong>Validation</strong></p>
+    <ul>
+      <li><code>customerName</code> — required, non-blank</li>
+      <li><code>product</code> — required, non-blank</li>
+      <li><code>quantity</code> — required, integer ≥ 1</li>
+      <li><code>totalAmount</code> — required, decimal &gt; 0</li>
+    </ul>
+
+    <p><strong>Response <code>201 Created</code></strong></p>
+    <pre><code>{
+  "orderId": "ORD-ABCD1234",
+  "customerName": "Alice",
+  "product": "Mechanical Keyboard",
+  "quantity": 2,
+  "totalAmount": 199.98,
+  "status": "PLACED",
+  "createdAt": "2024-09-15T10:23:45.123Z",
+  "updatedAt": "2024-09-15T10:23:45.123Z"
+}</code></pre>
+
+    <p><strong>Errors</strong></p>
+    <ul>
+      <li><code>400 Bad Request</code> — validation failure</li>
+      <li><code>500 Internal Server Error</code> — Kafka unreachable (create path fails fast)</li>
+    </ul>
+
+    <h4><span class="badge get">GET</span> <code>/api/orders/{orderId}</code> — Fetch an order</h4>
+    <p><strong>Response <code>200 OK</code></strong> — same shape as POST response.</p>
+    <p><strong>Errors</strong> — <code>404 Not Found</code>: <code>{"error":"NOT_FOUND","message":"Order not found: ORD-XXXX"}</code></p>
+
+    <hr>
+
+    <h3>Tracking Service <span class="chip">:8082</span></h3>
+
+    <h4><span class="badge get">GET</span> <code>/api/tracking/orders/{orderId}</code> — Get tracking snapshot</h4>
+    <p>Returns the current status and the full timeline for an order. Backed by the
+    cache-aside pattern (Redis HIT → return; MISS → MySQL → write-back to Redis).</p>
+
+    <p><strong>Response <code>200 OK</code></strong></p>
+    <pre><code>{
+  "orderId": "ORD-ABCD1234",
+  "currentStatus": "SHIPPED",
+  "lastUpdated": "2024-09-15T10:25:00.000Z",
+  "timeline": [
+    {
+      "status": "PLACED",
+      "eventType": "ORDER_PLACED",
+      "eventId": "EVT-aaa",
+      "occurredAt": "2024-09-15T10:23:45.123Z",
+      "recordedAt": "2024-09-15T10:23:45.200Z"
+    },
+    {
+      "status": "CONFIRMED",
+      "eventType": "ORDER_CONFIRMED",
+      "eventId": "EVT-bbb",
+      "occurredAt": "2024-09-15T10:24:00.000Z",
+      "recordedAt": "2024-09-15T10:24:00.050Z"
+    },
+    {
+      "status": "SHIPPED",
+      "eventType": "ORDER_SHIPPED",
+      "eventId": "EVT-ccc",
+      "occurredAt": "2024-09-15T10:25:00.000Z",
+      "recordedAt": "2024-09-15T10:25:00.080Z"
+    }
+  ]
+}</code></pre>
+
+    <p><strong>Errors</strong> — <code>404 Not Found</code>: <code>{"error":"NOT_TRACKED","message":"Order not tracked: ORD-XXXX"}</code></p>
+
+    <hr>
+
+    <h3>Delivery Service <span class="chip">:8083</span></h3>
+    <p>All endpoints return <code>200 OK</code> with a small JSON confirmation. They have
+    no side effects beyond publishing a Kafka event.</p>
+
+    <table>
+      <tr><th>Method + Path</th><th>Event published</th></tr>
+      <tr><td><span class="badge post">POST</span> <code>/api/delivery/{orderId}/ship</code></td><td><code>ORDER_SHIPPED</code> / <code>SHIPPED</code></td></tr>
+      <tr><td><span class="badge post">POST</span> <code>/api/delivery/{orderId}/out-for-delivery</code></td><td><code>ORDER_OUT_FOR_DELIVERY</code> / <code>OUT_FOR_DELIVERY</code></td></tr>
+      <tr><td><span class="badge post">POST</span> <code>/api/delivery/{orderId}/deliver</code></td><td><code>ORDER_DELIVERED</code> / <code>DELIVERED</code></td></tr>
+    </table>
+
+    <p><strong>Response shape</strong></p>
+    <pre><code>{
+  "orderId": "ORD-ABCD1234",
+  "status": "SHIPPED",
+  "eventType": "ORDER_SHIPPED",
+  "published": true
+}</code></pre>
+
+    <!-- ============================================================ -->
+    <h2 id="swagger"><span class="num">10</span>Swagger UI (OpenAPI 3 documentation)</h2>
+
+    <p>Each service auto-publishes interactive API docs at runtime. Swagger annotations
+    (<code>@Operation</code>, <code>@ApiResponse</code>, <code>@Tag</code>,
+    <code>@Parameter</code>, <code>@Schema</code>) live on the <code>*Rest</code>
+    interfaces (e.g. <code>OrderRest</code>, <code>TrackingRest</code>,
+    <code>DeliveryRest</code>) so the documentation is co-located with the API contract —
+    the implementation classes stay clean.</p>
+
+    <table>
+      <tr><th>Service</th><th>Swagger UI URL</th><th>OpenAPI JSON</th></tr>
+      <tr><td>Order Service</td><td><a href="http://localhost:8081/swagger-ui.html">http://localhost:8081/swagger-ui.html</a></td><td><code>http://localhost:8081/v3/api-docs</code></td></tr>
+      <tr><td>Tracking Service</td><td><a href="http://localhost:8082/swagger-ui.html">http://localhost:8082/swagger-ui.html</a></td><td><code>http://localhost:8082/v3/api-docs</code></td></tr>
+      <tr><td>Delivery Service</td><td><a href="http://localhost:8083/swagger-ui.html">http://localhost:8083/swagger-ui.html</a></td><td><code>http://localhost:8083/v3/api-docs</code></td></tr>
+    </table>
+
+    <!-- ============================================================ -->
+    <h2 id="structure"><span class="num">11</span>Project Structure</h2>
+
+    <p>The project follows an <strong>interface + implementation</strong> pattern for both
+    the controller layer and the service layer. This is the industry-standard layout:</p>
+    <ul>
+      <li><strong>Controller folder</strong>: <code>*Rest.java</code> (interface carrying
+          Swagger annotations) + <code>*RestImpl.java</code> (Spring
+          <code>@RestController</code> implementation)</li>
+      <li><strong>Service folder</strong>: <code>*Service.java</code> (interface
+          defining the contract) + <code>*ServiceImpl.java</code> (<code>@Service</code>
+          implementation with all business logic)</li>
+    </ul>
+
+    <pre class="ascii">order-tracking-platform/
+├── pom.xml                          # Parent POM (multi-module)
+├── docker-compose.yml               # Full stack: Kafka, MySQL, Redis, services, frontend
+├── PRODUCT-GUIDE.html               # This document
+├── README.md                        # Detailed technical README
+├── scripts/
+│   └── init-mysql.sql               # Schema bootstrap (runs on first boot)
+│
+├── order-service/
+│   ├── Dockerfile
+│   ├── pom.xml
+│   └── src/
+│       ├── main/java/com/example/orderservice/
+│       │   ├── OrderServiceApplication.java
+│       │   ├── controller/
+│       │   │   ├── OrderRest.java          # interface (OpenAPI 3 docs)
+│       │   │   └── OrderRestImpl.java       # @RestController impl
+│       │   ├── service/
+│       │   │   ├── OrderService.java        # interface
+│       │   │   └── OrderServiceImpl.java    # @Service impl
+│       │   ├── model/Order.java
+│       │   ├── repository/OrderDao.java
+│       │   ├── dto/{OrderRequest,OrderResponse,OrderEvent}.java
+│       │   ├── kafka/OrderEventProducer.java
+│       │   └── config/KafkaProducerConfig.java
+│       ├── main/resources/{application.yml, schema.sql}
+│       └── test/java/...            # OrderServiceImplTest, OrderRestImplTest, ...
+│
+├── tracking-service/
+│   ├── Dockerfile
+│   ├── pom.xml
+│   └── src/
+│       ├── main/java/com/example/trackingservice/
+│       │   ├── TrackingServiceApplication.java
+│       │   ├── controller/
+│       │   │   ├── TrackingRest.java       # interface (OpenAPI 3 docs)
+│       │   │   └── TrackingRestImpl.java    # @RestController impl
+│       │   ├── service/
+│       │   │   ├── TrackingService.java    # interface
+│       │   │   ├── TrackingServiceImpl.java # @Service impl
+│       │   │   ├── OrderStatusStateMachine.java
+│       │   │   └── InvalidStatusTransitionException.java
+│       │   ├── model/{OrderStatus,OrderStatusHistory,ProcessedEvent}.java
+│       │   ├── repository/{OrderStatusHistoryDao,ProcessedEventDao}.java
+│       │   ├── kafka/OrderEventConsumer.java
+│       │   ├── redis/OrderStateCache.java
+│       │   ├── config/KafkaConsumerConfig.java
+│       │   └── dto/OrderEvent.java
+│       ├── main/resources/{application.yml, schema.sql}
+│       └── test/java/...            # TrackingServiceImplTest, TrackingRestImplTest, ...
+│
+├── delivery-service/
+│   ├── Dockerfile
+│   ├── pom.xml
+│   └── src/
+│       ├── main/java/com/example/deliveryservice/
+│       │   ├── DeliveryServiceApplication.java
+│       │   ├── controller/
+│       │   │   ├── DeliveryRest.java        # interface (OpenAPI 3 docs)
+│       │   │   └── DeliveryRestImpl.java    # @RestController impl
+│       │   ├── service/
+│       │   │   ├── DeliveryService.java    # interface
+│       │   │   ├── DeliveryEventPublisherServiceImpl.java # @Service impl
+│       │   │   └── DeliveryEventPublisherService.java
+│       │   ├── dto/OrderEvent.java
+│       │   └── kafka/KafkaProducerConfig.java
+│       └── main/resources/application.yml
+│
+└── frontend/
+    ├── package.json
+    ├── vite.config.js
+    ├── index.html
+    ├── Dockerfile
+    ├── nginx.conf
+    └── src/
+        ├── main.jsx
+        ├── App.jsx
+        ├── index.css
+        ├── api/client.js
+        └── components/
+            ├── CreateOrderForm.jsx
+            ├── OrderSearch.jsx
+            ├── OrderDetail.jsx
+            └── OrderStats.jsx</pre>
+
+    <!-- ============================================================ -->
+    <h2 id="flow"><span class="num">12</span>End-to-End Walkthrough</h2>
+
+    <p>Let's say <strong>Alice</strong> orders a "Mechanical Keyboard". Here's exactly
+    what happens, step by step.</p>
+
+    <div class="step">
+      <div class="num">1</div>
+      <div class="body">
+        <h4>Alice fills the form on the React UI</h4>
+        <p>She enters customer name, product, quantity, total amount, and clicks
+        <em>Create Order</em>.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">2</div>
+      <div class="body">
+        <h4>React → Order Service (REST call)</h4>
+        <p>React internally calls <code>POST http://localhost:8081/api/orders</code>:</p>
+        <pre><code>{
+  "customerName": "Alice",
+  "product": "Mechanical Keyboard",
+  "quantity": 2,
+  "totalAmount": 199.98
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">3</div>
+      <div class="body">
+        <h4>Order Service does three things</h4>
+        <ol>
+          <li>Saves the order to <strong>MySQL</strong> (<code>order_db.orders</code>)
+              with <code>status = "PLACED"</code>.</li>
+          <li>Builds an <strong>event</strong>:
+            <pre><code>{
+  "eventId":   "EVT-aaa-111",
+  "orderId":   "ORD-ABCD1234",
+  "eventType": "ORDER_PLACED",
+  "status":    "PLACED",
+  "timestamp": "2024-09-15T10:23:45Z"
+}</code></pre></li>
+          <li>Publishes the event to <strong>Kafka</strong> topic <code>order-events</code>
+              (key = <code>orderId</code>).</li>
+          <li>Returns the order back to Alice with HTTP <code>201 Created</code>.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">4</div>
+      <div class="body">
+        <h4>Kafka delivers the event to the Tracking Service</h4>
+        <p>Kafka automatically hands this event to the Tracking Service consumer (because
+        it's listening on the <code>order-events</code> topic with consumer group
+        <code>tracking-service-group</code>).</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">5</div>
+      <div class="body">
+        <h4>Tracking Service processes the event</h4>
+        <ol>
+          <li><strong>Idempotency check</strong>: "Have I already processed this event?"
+              → checks <code>processed_events</code> table. No, haven't yet. OK.</li>
+          <li><strong>Current status check</strong>: Redis cache → empty. MySQL → also
+              empty (this is the first event). Current status = <code>null</code>.</li>
+          <li><strong>State validation</strong>: Event status = PLACED. PLACED is the
+              valid initial state. ✓ Allowed.</li>
+          <li><strong>MySQL write</strong>: Insert row into
+              <code>order_status_history</code>. Insert row into
+              <code>processed_events</code>.</li>
+          <li><strong>Redis cache update</strong>: Set key
+              <code>order:ORD-ABCD1234</code> with the new state.</li>
+          <li>Done! Event processed.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">6</div>
+      <div class="body">
+        <h4>Alice searches her order on the UI</h4>
+        <p>React calls <code>GET http://localhost:8082/api/tracking/orders/ORD-ABCD1234</code>.
+        The Tracking Service checks Redis first → <strong>HIT</strong> → returns
+        immediately without touching MySQL.</p>
+        <pre><code>{
+  "orderId": "ORD-ABCD1234",
+  "currentStatus": "PLACED",
+  "lastUpdated": "2024-09-15T10:23:45Z",
+  "timeline": [
+    {
+      "status": "PLACED",
+      "eventType": "ORDER_PLACED",
+      "eventId": "EVT-aaa-111",
+      "occurredAt": "2024-09-15T10:23:45Z"
+    }
+  ]
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">7</div>
+      <div class="body">
+        <h4>The order ships (via the Delivery Service)</h4>
+        <p>Alice clicks <strong>"Mark Shipped"</strong> on the UI (in real life, the
+        courier company would do this). React calls
+        <code>POST http://localhost:8083/api/delivery/ORD-ABCD1234/ship</code>.</p>
+        <p>The Delivery Service publishes a Kafka event:</p>
+        <pre><code>{
+  "eventId":   "EVT-bbb-222",
+  "orderId":   "ORD-ABCD1234",
+  "eventType": "ORDER_SHIPPED",
+  "status":    "SHIPPED",
+  "timestamp": "2024-09-15T10:25:00Z"
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">8</div>
+      <div class="body">
+        <h4>Tracking Service consumes the SHIPPED event</h4>
+        <ol>
+          <li>Idempotency check → not yet processed. OK.</li>
+          <li>Current status → Redis says <code>PLACED</code>.</li>
+          <li><strong>State validation</strong>: <code>PLACED → SHIPPED</code>?
+              <span class="badge pink">REJECTED</span> Not allowed! Must go
+              <code>PLACED → CONFIRMED → PACKED → SHIPPED</code>.</li>
+          <li>Throw <code>InvalidStatusTransitionException</code>.</li>
+          <li>Kafka error handler catches it → publishes the record to
+              <code>order-events.DLT</code> (Dead Letter Topic). No retry — invalid
+              transitions are non-retryable.</li>
+        </ol>
+        <p>This is the expected DLQ behavior.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">9</div>
+      <div class="body">
+        <h4>The correct sequence (assuming CONFIRMED + PACKED already happened)</h4>
+        <p>Tracking Service receives the SHIPPED event:</p>
+        <ol>
+          <li>Idempotency check → pass.</li>
+          <li>Current status → Redis returns <code>PACKED</code>.</li>
+          <li><strong>State validation</strong>: <code>PACKED → SHIPPED</code>?
+              <span class="badge green">ALLOWED</span> ✓</li>
+          <li>MySQL: new row inserted, status = <code>SHIPPED</code>.</li>
+          <li>Redis cache updated: status = <code>SHIPPED</code>.</li>
+          <li>Alice refreshes the UI → status is now <code>SHIPPED</code>, timeline has
+              a new entry.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">10</div>
+      <div class="body">
+        <h4>Final delivered</h4>
+        <p>Alice clicks <strong>Out for Delivery</strong> then <strong>Delivered</strong>.
+        Each click goes through the same flow:</p>
+        <ul>
+          <li>Delivery Service publishes a Kafka event.</li>
+          <li>Tracking Service consumes it.</li>
+          <li>State validation passes (<code>SHIPPED → OUT_FOR_DELIVERY → DELIVERED</code>).</li>
+          <li>MySQL history + Redis cache updated.</li>
+          <li>UI shows the new state.</li>
+        </ul>
+        <p><strong>Final timeline</strong></p>
+        <pre><code>"timeline": [
+  { "status": "PLACED" },
+  { "status": "CONFIRMED" },
+  { "status": "PACKED" },
+  { "status": "SHIPPED" },
+  { "status": "OUT_FOR_DELIVERY" },
+  { "status": "DELIVERED" }
+]</code></pre>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="concepts"><span class="num">13</span>Key Concepts</h2>
+
+    <div class="card purple">
+      <h3>1. Idempotency (duplicate event handling)</h3>
+      <p>If Kafka delivers the same event twice (network issue, consumer restart),
+      the <code>processed_events</code> table check catches it — if the
+      <code>eventId</code> has already been processed, skip silently. No duplicate row
+      will ever land in MySQL.</p>
+    </div>
+
+    <div class="card blue">
+      <h3>2. State Machine</h3>
+      <p>Order status can only change in this sequence:</p>
+      <pre class="ascii">PLACED → CONFIRMED → PACKED → SHIPPED → OUT_FOR_DELIVERY → DELIVERED</pre>
+      <p>If anyone tries "PLACED → SHIPPED" (skipping steps), the request is rejected
+      and the event lands in the DLQ. Backward transitions are also rejected
+      (<code>SHIPPED → PLACED</code> is not allowed).</p>
+    </div>
+
+    <div class="card pink">
+      <h3>3. Dead Letter Topic (DLQ)</h3>
+      <p>Events that can't be processed (invalid transition, malformed payload) go to
+      <code>order-events.DLT</code> for later inspection. Standard Kafka best practice
+      — don't lose data, don't retry forever.</p>
+    </div>
+
+    <div class="card green">
+      <h3>4. Redis Cache-Aside</h3>
+      <pre class="ascii">GET request
+  → Redis check (order:ORD-XXX)
+    → HIT  → return (fast, no MySQL touch)
+    → MISS → MySQL → write-back to Redis → return</pre>
+      <p>MySQL is always the source of truth. Redis is only an optimization. If Redis is
+      down, the app still works (just slower).</p>
+    </div>
+
+    <div class="card amber">
+      <h3>5. Kafka Message Key = orderId</h3>
+      <p>All events for order <code>ORD-ABCD1234</code> go to the same Kafka partition
+      → sequence is maintained → state machine never rejects a valid transition due to
+      out-of-order delivery.</p>
+    </div>
+
+    <div class="card">
+      <h3>6. Interface + Implementation Pattern</h3>
+      <p>Each controller and service follows industry-standard separation:</p>
+      <ul>
+        <li><strong><code>*Rest.java</code></strong> — interface carrying
+            <code>@Operation</code>, <code>@ApiResponse</code>, <code>@Tag</code>
+            (Swagger annotations)</li>
+        <li><strong><code>*RestImpl.java</code></strong> — <code>@RestController</code>
+            class with Spring MVC bindings + exception handlers + logging</li>
+        <li><strong><code>*Service.java</code></strong> — interface defining the
+            business contract</li>
+        <li><strong><code>*ServiceImpl.java</code></strong> — <code>@Service</code>
+            class with all business logic + structured logging</li>
+      </ul>
+      <p>This separation lets us mock the contract in unit tests without depending on
+      JPA, Kafka, or Redis.</p>
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="run"><span class="num">14</span>How to Run</h2>
+
+    <h3>Option A: Full stack via Docker Compose (recommended)</h3>
+    <pre><code># Extract the ZIP
+unzip order-tracking-platform.zip
+cd order-tracking-platform
+
+# Bring up everything (MySQL, Redis, Kafka, 3 services, frontend)
+docker compose up --build</code></pre>
+
+    <p>Wait ~60 seconds for everything to come up (Maven downloads on first build,
+    then Kafka boots, then services wait for their dependencies via healthchecks).</p>
+
+    <p><strong>Verify it's up:</strong></p>
+    <pre><code># Order Service health
+curl http://localhost:8081/actuator/health
+
+# Tracking Service health
+curl http://localhost:8082/actuator/health
+
+# Kafka topics list
+docker exec otp-kafka \
+  /opt/bitnami/kafka/bin/kafka-topics.sh \
+  --bootstrap-server localhost:9092 --list</code></pre>
+
+    <table>
+      <tr><th>Service</th><th>URL</th></tr>
+      <tr><td>Frontend (React + nginx)</td><td>http://localhost:8080</td></tr>
+      <tr><td>Order Service</td><td>http://localhost:8081</td></tr>
+      <tr><td>Tracking Service</td><td>http://localhost:8082</td></tr>
+      <tr><td>Delivery Service</td><td>http://localhost:8083</td></tr>
+      <tr><td>MySQL</td><td>localhost:3306</td></tr>
+      <tr><td>Redis</td><td>localhost:6379</td></tr>
+      <tr><td>Kafka</td><td>localhost:9092</td></tr>
+    </table>
+
+    <h3>Option B: Run services locally for development</h3>
+    <p>Useful if you want hot reload on Java code.</p>
+
+    <h4>Step 1: Start infrastructure</h4>
+    <pre><code>docker compose up -d mysql redis kafka
+docker compose ps   # wait for "healthy"</code></pre>
+
+    <h4>Step 2: Run each service from your IDE or via Maven</h4>
+    <pre><code># Terminal 1
+cd order-service
+mvn spring-boot:run \
+  -Dspring-boot.run.arguments="--MYSQL_HOST=localhost --MYSQL_PORT=3306 \
+                                --MYSQL_USER=orderuser --MYSQL_PASSWORD=orderpass \
+                                --MYSQL_DATABASE=order_db \
+                                --KAFKA_BOOTSTRAP_SERVERS=localhost:9092"
+
+# Terminal 2
+cd tracking-service
+mvn spring-boot:run \
+  -Dspring-boot.run.arguments="--MYSQL_HOST=localhost --MYSQL_PORT=3306 \
+                                --MYSQL_USER=trackinguser --MYSQL_PASSWORD=trackingpass \
+                                --MYSQL_DATABASE=tracking_db \
+                                --REDIS_HOST=localhost --REDIS_PORT=6379 \
+                                --KAFKA_BOOTSTRAP_SERVERS=localhost:9092"
+
+# Terminal 3
+cd delivery-service
+mvn spring-boot:run \
+  -Dspring-boot.run.arguments="--KAFKA_BOOTSTRAP_SERVERS=localhost:9092"</code></pre>
+
+    <h4>Step 3: Run the frontend</h4>
+    <pre><code>cd frontend
+npm install
+npm run dev</code></pre>
+
+    <p>The frontend runs on <a href="http://localhost:3000">http://localhost:3000</a>
+    and proxies <code>/api/*</code> to the backend services via <code>vite.config.js</code>.</p>
+
+    <!-- ============================================================ -->
+    <h2 id="manual"><span class="num">15</span>Manual Testing</h2>
+
+    <h3>Create an order</h3>
+    <pre><code>curl -sX POST http://localhost:8081/api/orders \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customerName": "Alice",
+    "product": "Mechanical Keyboard",
+    "quantity": 2,
+    "totalAmount": 199.98
+  }' | jq</code></pre>
+
+    <p>Copy the <code>orderId</code> from the response.</p>
+
+    <h3>Verify the PLACED event reached the Tracking Service</h3>
+    <pre><code>curl -s http://localhost:8082/api/tracking/orders/ORD-ABCD1234 | jq</code></pre>
+
+    <h3>Simulate the delivery lifecycle</h3>
+    <pre><code># Ship
+curl -sX POST http://localhost:8083/api/delivery/ORD-ABCD1234/ship | jq
+
+# Out for delivery
+curl -sX POST http://localhost:8083/api/delivery/ORD-ABCD1234/out-for-delivery | jq
+
+# Deliver
+curl -sX POST http://localhost:8083/api/delivery/ORD-ABCD1234/deliver | jq
+
+# Check final state
+curl -s http://localhost:8082/api/tracking/orders/ORD-ABCD1234 | jq</code></pre>
+
+    <h3>Verify Redis has the cached state</h3>
+    <pre><code>docker exec otp-redis redis-cli GET order:ORD-ABCD1234</code></pre>
+
+    <h3>Verify DLQ behavior (negative test)</h3>
+    <p>Trigger an invalid transition — ship an order that's already DELIVERED:</p>
+    <pre><code>curl -sX POST http://localhost:8083/api/delivery/ORD-ABCD1234/ship | jq
+
+# Wait a moment, then check the DLQ:
+docker exec otp-kafka \
+  /opt/bitnami/kafka/bin/kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092 \
+  --topic order-events.DLT \
+  --from-beginning \
+  --max-messages 1</code></pre>
+
+    <p>The DLT message will include headers like:</p>
+    <pre><code>KAFKA_DLT_EXCEPTION_FQCN: com.example.trackingservice.service.InvalidStatusTransitionException
+KAFKA_DLT_EXCEPTION_MESSAGE: Invalid transition for order ORD-ABCD1234: DELIVERED -> SHIPPED</code></pre>
+
+    <!-- ============================================================ -->
+    <h2 id="testing"><span class="num">16</span>Test Suite</h2>
+
+    <p>The project includes unit tests for every responsibility listed in the
+    requirements. Tests use JUnit 5 + Mockito and run against in-memory H2 (no MySQL)
+    and mocked Kafka (no broker).</p>
+
+    <table>
+      <tr><th>Test</th><th>What it covers</th></tr>
+      <tr><td><code>OrderServiceImplTest</code></td><td>Order creation persists the right fields with status=PLACED; Kafka producer invoked once with the right shape; <code>getOrder</code> returns the row or throws on miss</td></tr>
+      <tr><td><code>OrderEventProducerTest</code></td><td>Kafka producer sends with topic + key + payload; failure propagates so the REST layer can fail fast</td></tr>
+      <tr><td><code>OrderRestImplTest</code></td><td>REST endpoints: 201 on create, 400 on validation failure, 404 on not-found</td></tr>
+      <tr><td><code>OrderServiceApplicationTests</code></td><td>Spring context loads with H2 instead of MySQL, Kafka producer mocked</td></tr>
+      <tr><td><code>OrderStatusStateMachineTest</code></td><td>Every transition (forward, backward, same-state, terminal) is validated correctly</td></tr>
+      <tr><td><code>TrackingServiceImplTest</code></td><td><strong>Idempotency</strong> (duplicate event skipped), <strong>invalid transition</strong> (rejected, no DB writes), <strong>duplicate caught by unique constraint</strong> (race safety), <strong>Redis cache HIT</strong> (no MySQL read), <strong>Redis cache MISS</strong> (falls back, writes back), <strong>404 for unknown order</strong></td></tr>
+      <tr><td><code>OrderStateCacheTest</code></td><td>Cache HIT, MISS, write, graceful degradation on Redis failure</td></tr>
+      <tr><td><code>OrderEventConsumerTest</code></td><td>Consumer delegates to <code>TrackingService.applyEvent</code>; on invalid transition re-throws so the DLQ handler routes the record to the DLT</td></tr>
+      <tr><td><code>TrackingRestImplTest</code></td><td><code>GET /api/tracking/orders/{orderId}</code> returns current status + timeline; 404 on untracked order</td></tr>
+      <tr><td><code>TrackingServiceApplicationTests</code></td><td>Spring context loads with H2, Kafka consumer mocked</td></tr>
+      <tr><td><code>DeliveryEventPublisherTest</code></td><td>Publisher produces the right topic + key + payload shape</td></tr>
+      <tr><td><code>DeliveryRestImplTest</code></td><td>Each endpoint emits the correct event with the correct status</td></tr>
+    </table>
+
+    <h3>Run all tests</h3>
+    <pre><code>mvn test</code></pre>
+
+    <p>Or per module:</p>
+    <pre><code>cd order-service      &amp;&amp; mvn test
+cd tracking-service   &amp;&amp; mvn test
+cd delivery-service   &amp;&amp; mvn test</code></pre>
+
+    <h3>Test scope decisions</h3>
+    <ul>
+      <li><strong>No live Kafka broker tests</strong> by default. The Kafka consumer
+          behavior is verified via unit tests on <code>TrackingService.applyEvent</code>
+          (the listener's body) and on <code>OrderEventConsumer.onRecord</code> (which
+          simply re-throws on invalid transitions so the configured error handler routes
+          to the DLT). This keeps the test suite fast (under 10 seconds) and reliable
+          across environments.</li>
+      <li><strong>No live MySQL tests</strong> by default. JPA entities are tested in
+          unit tests via Mockito against the repository interfaces. The Spring
+          context-load smoke tests use H2 in MySQL mode to verify wiring.</li>
+      <li><strong>No live Redis tests</strong> by default. <code>OrderStateCache</code>
+          is tested via mocked <code>StringRedisTemplate</code>.</li>
+    </ul>
+
+    <!-- ============================================================ -->
+    <h2 id="whats-next">What I'd add next (not in scope for the demo)</h2>
+
+    <p>These are intentionally out of scope but worth flagging in an interview:</p>
+
+    <ul>
+      <li><strong>Distributed tracing</strong> with OpenTelemetry + Tempo/Jaeger —
+          <code>trace_id</code> flowing through the Kafka headers.</li>
+      <li><strong>Schema registry</strong> (Confluent or Apicurio) to evolve the
+          <code>OrderEvent</code> contract safely.</li>
+      <li><strong>Multiple Kafka partitions + parallel consumers</strong> for higher throughput.</li>
+      <li><strong>Outbox pattern</strong> in the Order Service so that an order row + the
+          PLACED event are written in the same DB transaction (eliminating the small
+          window where the order exists but the event doesn't).</li>
+      <li><strong>Spring Cloud Gateway</strong> as a single external entry point with
+          rate limiting.</li>
+      <li><strong>OAuth 2.1 resource server</strong> on each service.</li>
+      <li><strong>Testcontainers</strong> integration tests that spin up real Kafka +
+          MySQL + Redis.</li>
+      <li><strong>Prometheus + Grafana</strong> for metrics (Spring Boot Actuator already
+          exposes <code>/actuator/prometheus</code>).</li>
+    </ul>
+
+    <footer>
+      <p>Real-Time Order &amp; Tracking Platform — Developer Guide<br>
+      Built with Java 17, Spring Boot 3.2.5, Apache Kafka 3.7, MySQL 8.0, Redis 7,
+      React 18, Docker Compose.</p>
+    </footer>
+
+  </main>
+</div>
+
+</body>
+</html>

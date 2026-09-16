@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/order-tracking-platform/delivery-service/delivery-service.iml" filepath="$PROJECT_DIR$/order-tracking-platform/delivery-service/delivery-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/order-tracking-platform/order-service/order-service.iml" filepath="$PROJECT_DIR$/order-tracking-platform/order-service/order-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/order-tracking-platform/order-tracking-platform.iml" filepath="$PROJECT_DIR$/order-tracking-platform/order-tracking-platform.iml" />
+      <module fileurl="file://$PROJECT_DIR$/order-tracking-platform/tracking-service/tracking-service.iml" filepath="$PROJECT_DIR$/order-tracking-platform/tracking-service/tracking-service.iml" />
+    </modules>
+  </component>
+</project>

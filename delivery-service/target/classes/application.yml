@@ -1,0 +1,37 @@
+# Delivery Service configuration
+server:
+  port: 8083
+
+spring:
+  application:
+    name: delivery-service
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+order:
+  events:
+    topic: order-events
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+# OpenAPI 3 / Swagger UI
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+  packages-to-scan: com.example.deliveryservice.Rest
+
+logging:
+  level:
+    com.example.deliveryservice: INFO
+    org.springframework.kafka: INFO

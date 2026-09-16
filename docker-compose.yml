@@ -1,0 +1,175 @@
+# =============================================================
+#  Real-Time Order & Tracking Platform - Docker Compose
+# =============================================================
+#
+# Brings up the full stack with one command:
+#   docker compose up --build
+#
+# Services:
+#   - mysql           (MySQL 8.0) : order_db + tracking_db
+#   - redis           (Redis 7)   : cache for tracking
+#   - kafka           (Apache Kafka 3.7 in KRaft mode, no Zookeeper)
+#   - order-service   (port 8081)
+#   - tracking-service(port 8082)
+#   - delivery-service(port 8083)
+#   - frontend        (nginx on port 8080 -> 80)
+#
+# Notes:
+#   - Two MySQL databases live inside one MySQL container to keep the
+#     project intentionally small. In production these would be separate
+#     instances (or separate schemas in a shared instance).
+#   - MySQL schema is applied via docker-entrypoint-initdb.d/*.sql on the
+#     first boot only. To re-apply the schema, remove the
+#     `mysql_data` volume.
+#   - Kafka is configured for KRaft mode (single-node broker acting as
+#     its own controller), which keeps the compose file small. Not for
+#     production - production wants 3+ brokers and 3+ controllers.
+#   - DLQ topic `order-events.DLT` is auto-created by Spring Kafka on
+#     first failed message (auto.create.topics.enable=true).
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: otp-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: order_db
+      MYSQL_USER: orderuser
+      MYSQL_PASSWORD: orderpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./scripts/init-mysql.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpass"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    container_name: otp-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  kafka:
+    # Kafka in KRaft mode - no Zookeeper required.
+    image: bitnami/kafka:3.7
+    container_name: otp-kafka
+    restart: unless-stopped
+    ports:
+      - "9092:9092"   # external listener (host -> container)
+      - "9093:9093"   # controller listener (KRaft)
+    environment:
+      # KRaft settings
+      KAFKA_CFG_NODE_ID: 1
+      KAFKA_CFG_PROCESS_ROLES: "broker,controller"
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_CFG_LISTENERS: "PLAINTEXT://:29092,CONTROLLER://:9093,PLAINTEXT_HOST://:9092"
+      KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092"
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      # Auto-create topics (incl. DLT) for demo convenience
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_CFG_NUM_PARTITIONS: "3"
+      KAFKA_CFG_DEFAULT_REPLICATION_FACTOR: "1"
+      KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+      KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+    volumes:
+      - kafka_data:/bitnami/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  order-service:
+    build:
+      context: .
+      dockerfile: order-service/Dockerfile
+    container_name: otp-order-service
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: order_db
+      MYSQL_USER: orderuser
+      MYSQL_PASSWORD: orderpass
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    ports:
+      - "8081:8081"
+
+  tracking-service:
+    build:
+      context: .
+      dockerfile: tracking-service/Dockerfile
+    container_name: otp-tracking-service
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: tracking_db
+      MYSQL_USER: trackinguser
+      MYSQL_PASSWORD: trackingpass
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    ports:
+      - "8082:8082"
+
+  delivery-service:
+    build:
+      context: .
+      dockerfile: delivery-service/Dockerfile
+    container_name: otp-delivery-service
+    restart: unless-stopped
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    ports:
+      - "8083:8083"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: otp-frontend
+    restart: unless-stopped
+    depends_on:
+      - order-service
+      - tracking-service
+      - delivery-service
+    ports:
+      - "8080:80"
+
+volumes:
+  mysql_data:
+  redis_data:
+  kafka_data:

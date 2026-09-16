@@ -1,0 +1,4 @@
+com\example\orderservice\Rest\OrderRestImplTest.class
+com\example\orderservice\service\OrderServiceImplTest.class
+com\example\orderservice\kafka\OrderEventProducerTest.class
+com\example\orderservice\OrderServiceApplicationTests.class
